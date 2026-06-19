@@ -565,7 +565,7 @@ async function doCameraPermission(){
   try{
     if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia) throw new Error('API não suportada');
     let stream=null;
-    for(const c of[{video:{facingMode:{exact:'environment'}}},{video:{facingMode:'environment'}},{video:true}]){
+    for(const c of[{video:{facingMode:{exact:'environment'},{video:{facingMode:'environment'},{video:true}]){
       try{stream=await navigator.mediaDevices.getUserMedia(c);break;}catch(e){}
     }
     if(!stream) throw new Error('Nenhuma câmera encontrada');
@@ -631,7 +631,7 @@ function render(){
 async function startCamera(videoElId){
   try{
     let stream=null;
-    for(const c of[{video:{facingMode:{exact:'environment'},width:{ideal:1280}}},{video:{facingMode:'environment'}},{video:{width:{ideal:1280}}},{video:true}]){
+    for(const c of[{video:{facingMode:{exact:'environment'},width:{ideal:1280},{video:{facingMode:'environment'},{video:{width:{ideal:1280},{video:true}]){
       try{stream=await navigator.mediaDevices.getUserMedia(c);break;}catch(e){}
     }
     if(!stream){toast('Câmera não disponível');return false;}
@@ -828,7 +828,7 @@ async function finalizarPosicao(){
   if(posSessionId)await finalizeSessao(posSessionId);
   modal('Contagem finalizada! ✅','Exportar relatório PDF com log completo?',[
     {label:'📄 Exportar PDF',cls:'modal-primary',cb:()=>exportPosicaoPDF()},
-    {label:'Fechar',cb:()=>{posActive=false;posSessionId=null;render();}}
+    {label:'Fechar',cb:()=>{posActive=false;posSessionId=null;render();}
   ]);
 }
 
@@ -950,7 +950,7 @@ function wmsSkip(){
   if(!wmsResults[key]) wmsResults[key]={code:item.code,qty:0,phase:wmsPhase,skipped:true,edited:false,editLog:[],confirmedAt:now()};
   wmsStep++;if(camStreaming)stopCamera();render();
 }
-function wmsBack(){if(wmsStep>0){wmsStep--;if(camStreaming)stopCamera();render();}}
+function wmsBack(){if(wmsStep>0){wmsStep--;if(camStreaming)stopCamera();render();}
 function wmsPhaseComplete(){
   const otherPhase=wmsPhase==='deposito'?'mostruario':'deposito';
   const otherName=otherPhase==='deposito'?'Depósito':'Mostruário';
@@ -961,7 +961,7 @@ function wmsPhaseComplete(){
     if(skipped>0) msg+=`<br>⚠️ ${skipped} item(s) pulado(s).`;
     msg+=`<br><br>Agora repita a contagem no <strong>Mostruário</strong>.`;
     modal('Depósito finalizado!',msg,[
-      {label:`🪟 Iniciar ${otherName}`,cls:'modal-primary',cb:()=>{wmsPhase=otherPhase;wmsStep=0;render();}},
+      {label:`🪟 Iniciar ${otherName}`,cls:'modal-primary',cb:()=>{wmsPhase=otherPhase;wmsStep=0;render();},
       {label:'Ver resultados',cb:()=>wmsFinalize()},
     ]);
   } else wmsFinalize();
@@ -1052,7 +1052,7 @@ async function delItem(id){
         cachedItems=cachedItems.filter(i=>i.id!==id);
         renderLista();toast('Item removido');
       }catch(e){toast('Erro ao remover');}
-    }},
+    },
     {label:'Cancelar',cb:null}
   ]);
 }
@@ -1065,7 +1065,7 @@ async function clearAll(){
         await sb.from('contagem_itens').delete().eq('loja',CU.store);
         cachedItems=[];setSyncDot('ok');renderLista();
       }catch(e){setSyncDot('off');toast('Erro ao limpar');}
-    }},
+    },
     {label:'Cancelar',cb:null}
   ]);
 }
@@ -1108,7 +1108,7 @@ async function loadPosicao(event){
       const ws=wb.Sheets[wb.SheetNames[0]];
       const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
       let hRow=-1;
-      for(let i=0;i<rows.length;i++){if(rows[i].some(c=>/^c[oó]digo$/i.test(String(c).trim()))){hRow=i;break;}}
+      for(let i=0;i<rows.length;i++){if(rows[i].some(c=>/^c[oó]digo$/i.test(String(c).trim()))){hRow=i;break;}
       if(hRow<0){toast('Cabeçalho não encontrado');return;}
       const headers=rows[hRow].map(h=>String(h||'').trim().toLowerCase());
       const cI=headers.findIndex(h=>/^c[oó]digo$/.test(h));
@@ -1161,7 +1161,7 @@ async function loadMovimentacao(event){
       const ws=wb.Sheets[wb.SheetNames[0]];
       const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
       let hRow=-1;
-      for(let i=0;i<rows.length;i++){if(rows[i].some(c=>/^c[oó]digo$/i.test(String(c).trim()))){hRow=i;break;}}
+      for(let i=0;i<rows.length;i++){if(rows[i].some(c=>/^c[oó]digo$/i.test(String(c).trim()))){hRow=i;break;}
       if(hRow<0){toast('Cabeçalho não encontrado');return;}
       const blueIdx=[10,13,14,17,19];
       const blueNames=['Local','Prat 100','Prat 60','Prat 200','Dep Filial'];
@@ -1292,7 +1292,7 @@ async function removeUser(id,nome){
     {label:'Remover',cls:'modal-danger',cb:async()=>{
       await sb.from('usuarios').update({ativo:false}).eq('id',id);
       toast('Usuário removido');renderSupervisor();
-    }},
+    },
     {label:'Cancelar',cb:null}
   ]);
 }
@@ -1325,7 +1325,7 @@ async function removeStore(nome){
       await sb.from('lojas').update({ativa:false}).eq('nome',nome);
       cachedLojas=await fetchLojas();
       toast('Loja removida');renderSupervisor();
-    }},
+    },
     {label:'Cancelar',cb:null}
   ]);
 }
