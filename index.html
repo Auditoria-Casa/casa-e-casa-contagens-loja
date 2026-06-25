@@ -895,25 +895,41 @@ function renderListContent(){
 
 async function loadHistoricoSection(){
   var el=document.getElementById('historico-section');if(!el)return;
-  el.innerHTML='<div style="text-align:center;padding:12px;color:var(--text3);font-size:12px">⏳ Carregando histórico...</div>';
+  el.innerHTML='<div style="text-align:center;padding:12px;color:var(--text3);font-size:12px">Carregando histórico...</div>';
   try{
     var hist=await fetchHistorico(CU.store);
-    if(!hist.length){el.innerHTML='<div style="font-size:12px;color:var(--text3);padding:8px 0;text-align:center">Nenhuma contagem finalizada ainda</div>';return;}
-    var rows=hist.map(function(h){
+    if(!hist.length){
+      el.innerHTML='<div style="font-size:12px;color:var(--text3);padding:8px 0;text-align:center">Nenhuma contagem finalizada ainda</div>';
+      return;
+    }
+    var html_rows='';
+    for(var hi=0;hi<hist.length;hi++){
+      var h=hist[hi];
       var dt=h.data_contagem?fmtDate(h.data_contagem):(h.finalizada_em?new Date(h.finalizada_em).toLocaleDateString('pt-BR'):'—');
-      var tipo=h.tipo==='grade'?'📐 Grade':h.tipo==='movimentacao'?'📈 Movim.':'📦 Posição';
+      var tipoLabel=h.tipo==='grade'?'Contagem de Grade':h.tipo==='movimentacao'?'Movimentação por Filial':'Posição de Estoque';
       var isSup=CU.role==='supervisor';
-      return '<div style="display:flex;align-items:center;gap:8px;padding:9px 10px;background:var(--bg);border:0.5px solid var(--border);border-radius:var(--rad);font-size:11px;margin-bottom:5px">'+
+      var editBtn=isSup?'<button class="btn-sm" style="white-space:nowrap;flex-shrink:0" onclick="editarHistorico(this.getAttribute('data-id'))" data-id="'+h.id+'">✏️ Editar</button>':'';
+      html_rows+='<div style="display:flex;align-items:center;gap:8px;padding:9px 10px;background:var(--bg);border:0.5px solid var(--border);border-radius:var(--rad);font-size:11px;margin-bottom:5px">'+
         '<div style="flex:1;min-width:0">'+
-          '<div style="font-weight:600;color:var(--text)">'+dt+' · '+tipo+'</div>'+
-          '<div style="color:var(--text2);margin-top:2px">'+h.usuario+' · '+String(h.loja).split('/')[0].trim()+' · '+h.total_itens+' itens · '+h.total_divergencias+' div.</div>'+
+          '<div style="font-weight:600;color:var(--text)">'+dt+'</div>'+
+          '<div style="color:var(--text2);margin-top:1px;font-size:10px">'+tipoLabel+' · '+h.usuario+' · '+String(h.loja).split('/')[0].trim()+'</div>'+
+          '<div style="color:var(--text3);margin-top:1px;font-size:10px">'+h.total_itens+' itens · '+h.total_divergencias+' divergências</div>'+
         '</div>'+
-        '<button class="exp-btn" style="white-space:nowrap;flex-shrink:0" onclick="exportHistoricoPDF(''+h.id+'')">📄 PDF</button>'+
-        (isSup?'<button class="btn-sm" style="white-space:nowrap;flex-shrink:0" onclick="editarHistorico(''+h.id+'')">✏️ Editar</button>':'')+
+        '<button class="exp-btn" style="white-space:nowrap;flex-shrink:0" onclick="exportHistoricoPDF(this.getAttribute('data-id'))" data-id="'+h.id+'">📄 PDF</button>'+
+        editBtn+
         '</div>';
-    }).join('');
-    el.innerHTML='<div style="margin-top:4px"><div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px;padding:0 2px">📜 Histórico de contagens finalizadas</div>'+rows+'</div>';
-  }catch(e){el.innerHTML='<div style="font-size:12px;color:var(--text3);padding:8px">Erro ao carregar histórico</div>';}
+    }
+    el.innerHTML='<div style="margin-top:4px">'+
+      '<div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px;padding:0 2px;display:flex;align-items:center;justify-content:space-between">'+
+        '<span>📜 Histórico de contagens finalizadas</span>'+
+        '<span style="font-size:10px;color:var(--text3)">'+hist.length+' contagem(ns)</span>'+
+      '</div>'+
+      html_rows+
+    '</div>';
+  }catch(e){
+    el.innerHTML='<div style="font-size:12px;color:var(--text3);padding:8px">Erro ao carregar histórico</div>';
+    console.error('loadHistoricoSection error:',e);
+  }
 }
 
 async function exportHistoricoPDF(hid){
