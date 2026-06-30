@@ -900,10 +900,11 @@ function showConfirmationScreen(tipo){
 
 // ── LISTA ──
 function renderLista(){
+  var Q=String.fromCharCode(39);
   document.getElementById('main-content').innerHTML=
     '<div class="list-tabs">'+
-    '<button class="list-tab '+(activeListTab==='diario'?'active':'')+'" onclick="setListTab('diario')">📋 Contagens Diárias</button>'+
-    '<button class="list-tab '+(activeListTab==='grade'?'active':'')+'" onclick="setListTab('grade')">📐 Contagem de Grade</button>'+
+    '<button class="list-tab '+(activeListTab==='diario'?'active':'')+'" onclick="setListTab('+Q+'diario'+Q+')">📋 Contagens Diárias</button>'+
+    '<button class="list-tab '+(activeListTab==='grade'?'active':'')+'" onclick="setListTab('+Q+'grade'+Q+')">📐 Contagem de Grade</button>'+
     '</div><div id="list-content"></div>';
   renderListContent();
 }
@@ -1168,10 +1169,11 @@ async function clearAll(){
 
 // ── RELATÓRIOS ──
 function renderRelatorios(){
+  var Q=String.fromCharCode(39);
   document.getElementById('main-content').innerHTML=
     '<div class="list-tabs">'+
-    '<button class="list-tab '+(activeRelTab==='diario'?'active':'')+'" onclick="setRelTab('diario')">📋 Contagens Diárias</button>'+
-    '<button class="list-tab '+(activeRelTab==='grade'?'active':'')+'" onclick="setRelTab('grade')">📐 Contagem de Grade</button>'+
+    '<button class="list-tab '+(activeRelTab==='diario'?'active':'')+'" onclick="setRelTab('+Q+'diario'+Q+')">📋 Contagens Diárias</button>'+
+    '<button class="list-tab '+(activeRelTab==='grade'?'active':'')+'" onclick="setRelTab('+Q+'grade'+Q+')">📐 Contagem de Grade</button>'+
     '</div><div id="rel-content"></div>';
   renderRelContent();
 }
